@@ -1,3 +1,6 @@
+#ifndef CONSOLE_NOTEPAD_OPEN_NOTE_H
+#define CONSOLE_NOTEPAD_OPEN_NOTE_H
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "struct.h"
@@ -24,15 +27,15 @@ int load_note_from_file(const char *filename, Note *note) {
     return 1;
 }
 
-void view_note_by_id() {
+void open_note(char *directory) {
     int id, check_flag;
     Note note[1];
 
     printf("Input ID: ");
     scanf("%d", &id);
 
-    char filename[100];
-    snprintf(filename, sizeof(filename), "..\\all_notes\\note_%d", id);
+    char filename[256];
+    snprintf(filename, sizeof(filename), "%s\\note_%d", directory, id);
 
     check_flag = load_note_from_file(filename, note);
 
@@ -45,3 +48,5 @@ void view_note_by_id() {
     printf("Change: %s\n", note->edited_timestamp);
     printf("Text: %s\n", note->text);
 }
+
+#endif // CONSOLE_NOTEPAD_OPEN_NOTE_H

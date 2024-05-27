@@ -1,30 +1,16 @@
+#ifndef CONSOLE_NOTEPAD_ADD_NOTE_H
+#define CONSOLE_NOTEPAD_ADD_NOTE_H
+
 #include <time.h>
 #include "struct.h"
 
-int CheckExtension(char * filename) {
-    int lenstr;
-    lenstr = strlen(filename);
-    if  (lenstr < 4 || strcmp(filename + lenstr - 4, ".dat") != 0) {
-        strcat(filename, ".dat");
-        return 1;
-    }
-    else {
-        printf("Not found\n");
-        return 0;
-    }
-}
-
-void save_note_to_file(Note note) {
+void save_note_to_file(Note note, char *directory) {
     char filename[256];
 
-    snprintf(filename, sizeof(filename), "..\\all_notes\\note_%d", note.id);
-
+    snprintf(filename, sizeof(filename), "%s\\note_%d.dat", directory, note.id);
     printf("%s", filename);
 
     FILE *file = fopen(filename, "wb");
-
-    if (!(CheckExtension(filename)))
-        return;
 
     if (file == NULL) {
         printf("Error file open\n");
@@ -43,7 +29,7 @@ void save_note_to_file(Note note) {
     fclose(file);
 }
 
-void add_note() {
+void add_note(char *directory) {
     Note note;
 
     time_t now = time(NULL);
@@ -76,8 +62,10 @@ void add_note() {
     }
     note.text[length] = '\0';
 
-    save_note_to_file(note);
+    save_note_to_file(note, directory);
     printf("All done\n");
 
     free(note.text);
 }
+
+#endif //CONSOLE_NOTEPAD_ADD_NOTE_H

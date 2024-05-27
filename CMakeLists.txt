@@ -7,4 +7,6 @@ add_executable(console_notepad main.c
         src/add_note.h
         src/struct.h
         src/open_note.h
-        src/check_number.h)
+        src/check_number.h
+        src/add_folder.h
+        src/open_folder.h)
