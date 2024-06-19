@@ -19,12 +19,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="927cc6fa-ab92-4be0-8a33-394181ff74d9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/create_test_notes_with_folders.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.exe" beforeDir="false" afterPath="$PROJECT_DIR$/main.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/~$да.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/~$нсолнотпад.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/консолнотпад.docx" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -153,7 +148,7 @@
       <workItem from="1718654247107" duration="3796000" />
       <workItem from="1718741773149" duration="782000" />
       <workItem from="1718743246597" duration="1474000" />
-      <workItem from="1718778940508" duration="6445000" />
+      <workItem from="1718778940508" duration="7145000" />
     </task>
     <task id="LOCAL-00001" summary="need bugfix and work with directory">
       <option name="closed" value="true" />
@@ -187,7 +182,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718788686285</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="вроде все V1.1">
+      <option name="closed" value="true" />
+      <created>1718790481496</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1718790481496</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -215,6 +218,7 @@
     <MESSAGE value="work with folder, need aaaaa" />
     <MESSAGE value="вроде все" />
     <MESSAGE value="вроде все V1.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="вроде все V1.0" />
+    <MESSAGE value="вроде все V1.1" />
+    <option name="LAST_COMMIT_MESSAGE" value="вроде все V1.1" />
   </component>
 </project>
