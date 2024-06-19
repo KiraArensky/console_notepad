@@ -26,17 +26,30 @@
 typedef struct {
     int id;
     char created_timestamp[20];
-    char edited_timestamp[20];
     char *text;
 } Note;
 
+
 void create_folder(const char *folder) {
-    mkdir(folder, 0777);
+    struct stat st = {0};
+    if (stat(folder, &st) == -1) {
+        mkdir(folder, 0777);
+        printf("Папка \"%s\" создана.\n", folder);
+    } else {
+        printf("Папка с именем \"%s\" уже существует.\n", folder);
+    }
 }
+
 
 void save_note_to_file(const char *folder, const char *filename, Note note) {
     char filepath[512];
     snprintf(filepath, sizeof(filepath), "%s" PATH_SEPARATOR "%s.dat", folder, filename);
+
+    struct stat st = {0};
+    if (stat(filepath, &st) != -1) {
+        printf("Заметка с именем \"%s\" уже существует.\n", filename);
+        return;
+    }
 
     FILE *file = fopen(filepath, "wb");
     if (file == NULL) {
@@ -46,7 +59,6 @@ void save_note_to_file(const char *folder, const char *filename, Note note) {
 
     fwrite(&note.id, sizeof(int), 1, file);
     fwrite(note.created_timestamp, sizeof(char), 20, file);
-    fwrite(note.edited_timestamp, sizeof(char), 20, file);
 
     size_t text_length = strlen(note.text) + 1;
     fwrite(&text_length, sizeof(size_t), 1, file);
@@ -65,7 +77,6 @@ Note load_note_from_file(const char *filepath) {
 
     fread(&note.id, sizeof(int), 1, file);
     fread(note.created_timestamp, sizeof(char), 20, file);
-    fread(note.edited_timestamp, sizeof(char), 20, file);
 
     size_t text_length;
     fread(&text_length, sizeof(size_t), 1, file);
@@ -89,17 +100,21 @@ void list_notes(const char *folder) {
         while ((ent = readdir(dir)) != NULL) {
             if (ent->d_name[0] != '.') {
                 char filepath[512];
-                snprintf(filepath, sizeof(filepath), "%s" PATH_SEPARATOR "%s", folder, ent->d_name);
+                snprintf(filepath, sizeof(filepath), "%s%s%s", folder, PATH_SEPARATOR, ent->d_name);
 
                 struct stat st;
-                if (stat(filepath, &st) == 0 && S_ISREG(st.st_mode)) {
-                    printf("%d. %s\n", i++, ent->d_name);
+                char *dot = strrchr(ent->d_name, '.');
+
+                if (dot && strcmp(dot + 1, "dat") == 0) {
+                    if (stat(filepath, &st) == 0 && S_ISREG(st.st_mode)) {
+                        printf("%d. %s\n", i++, ent->d_name);
+                    }
                 }
             }
         }
         closedir(dir);
     } else {
-        printf("Ошибка открытия директории");
+        perror("Ошибка открытия директории");
     }
 }
 
@@ -132,7 +147,6 @@ void add_note_to_folder(const char *folder) {
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
     strftime(note.created_timestamp, sizeof(note.created_timestamp), "%Y-%m-%d %H:%M", t);
-    strcpy(note.edited_timestamp, note.created_timestamp);
 
     note.text = (char *) malloc(INITIAL_TEXT_LENGTH * sizeof(char));
     if (note.text == NULL) {
@@ -173,9 +187,7 @@ void view_note_in_folder(const char *folder, const char *filename) {
     Note note = load_note_from_file(filepath);
     printf("Имя: %s\n", filename);
     printf("Дата создания: %s\n", note.created_timestamp);
-    if (strcmp(note.created_timestamp, note.edited_timestamp) != 0) {
-        printf("Дата редактирования: %s\n", note.edited_timestamp);
-    }
+
     printf("\n%s\n", note.text);
 
     free_note_text(&note);
@@ -245,7 +257,6 @@ void create_new_folder(char *current_folder) {
     snprintf(temp_folder, sizeof(temp_folder), "%s" PATH_SEPARATOR "%s", current_folder, new_folder);
 
     create_folder(temp_folder);
-    printf("Папка \"%s\" создана.\n", temp_folder);
 }
 
 void show_menu(const char *current_folder) {
@@ -295,30 +306,36 @@ int main() {
                 int note_index;
                 if (scanf("%d", &note_index) != 1) {
                     printf("Ошибка: введено не число.\n");
-                    while (getchar() != '\n'); // Очистка буфера ввода
-                    continue;
+                    while (getchar() != '\n');
                 }
 
-                DIR *dir = opendir(current_folder);
-                if (dir) {
-                    struct dirent *ent;
+                DIR *dir;
+                struct dirent *ent;
+                if ((dir = opendir(current_folder)) != NULL) {
                     int i = 1;
                     while ((ent = readdir(dir)) != NULL) {
-                        if (ent->d_name[0] != '.' && i++ == note_index) {
+                        if (ent->d_name[0] != '.') {
                             char filepath[512];
-                            snprintf(filepath, sizeof(filepath), "%s" PATH_SEPARATOR "%s", current_folder, ent->d_name);
+                            snprintf(filepath, sizeof(filepath), "%s%s%s", current_folder, PATH_SEPARATOR, ent->d_name);
 
                             struct stat st;
-                            if (stat(filepath, &st) == 0 && S_ISREG(st.st_mode)) {
-                                view_note_in_folder(current_folder, ent->d_name);
-                                system("pause");
+                            char *dot = strrchr(ent->d_name, '.');
+
+                            if (dot && strcmp(dot + 1, "dat") == 0) {
+                                if (stat(filepath, &st) == 0 && S_ISREG(st.st_mode)) {
+                                    if (i == note_index) {
+                                        view_note_in_folder(current_folder, ent->d_name);
+                                        system("pause");
+                                        break;
+                                    }
+                                    i++;
+                                }
                             }
-                            break;
                         }
                     }
                     closedir(dir);
                 } else {
-                    printf("Ошибка открытия папки.\n");
+                    perror("Ошибка открытия директории");
                 }
                 break;
             }
